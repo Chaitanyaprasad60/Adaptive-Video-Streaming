@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Streaming</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #1a1a1a;
+      /* Set your desired background color */
+      color: #fff;
+      /* Set text color */
+      font-family: 'Arial', sans-serif;
+
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: #333;
+      /* Set your desired top bar background color */
+    }
+
+    video {
+      width: 80%;
+      height: 80vh;
+      /* Subtract the top bar height */
+      object-fit: cover;
+      border: 1px solid #ccc;
+      /* Optional border for video element */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      /* Optional box shadow for video element */
+      margin: auto;
+    }
+
+
+    /* input[type="file"] {
+      display: none;
+    } */
+
+    #upload {
+      display: none;
+    }
+
+    label {
+      cursor: pointer;
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      /* Set your desired button background color */
+      color: #fff;
+      /* Set button text color */
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    /* Styles for the modal */
+    #customPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      color: black;
+    }
+
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    /* Additional styling for the close button */
+    #closeBtn {
+      cursor: pointer;
+      color: #555;
+      font-size: 18px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Video Streaming</h1>
+    <label for="upload" onclick="selectAndUpload()">Upload</label>
+    <input type="file" id="upload">
+  </header>
+
+  <video controls preload="auto">
+    <!-- Replace 'your-backend-video-link' with the actual backend link to the video -->
+    <source id="myVideo" src="http://localhost:3000/video" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+
+  <!-- Modal content -->
+  <div id="customPopup">
+    <span id="closeBtn" onclick="closePopup()">&times;</span>
+    <h2 id="popupTitle"></h2>
+    <p id="popupMessage"></p>
+    <button id="newTabBtn" onclick="openNewTab()">Open Video Page</button>
+  </div>
+
+  <!-- Overlay to darken the background -->
+  <div id="overlay"></div>
+
+
+  <script>
+
+    let link = ""
+   
+    // Code for success or failure Popup
+    function openPopup(title, message) {
+      link = message;
+      document.getElementById('popupTitle').innerText = title;
+      document.getElementById('popupMessage').innerText = "File Uploaded Succesfully - Copy File URL  " + message;
+
+      // Show the overlay and the modal
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('customPopup').style.display = 'block';
+    }
+    function closePopup() {
+      // Hide the overlay and the modal
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('customPopup').style.display = 'none';
+    }
+    function openNewTab() { window.open(link, '_blank'); }
+
+
+    // Code to get Backend Video
+    function getBackendVideoUrl() {
+      let url = window.location.href;
+      let backendUrl = url.split('?')[0];
+      let params = url.split('?')[1] || "defaultVideo";
+
+      return backendUrl + 'video/' + params;
+    }
+    let videoElement = document.getElementById('myVideo');
+    var videoUrl = getBackendVideoUrl();; // Replace with the actual new video URL
+    videoElement.setAttribute('src', videoUrl);
+
+
+    // Function to Upload File 
+    function selectAndUpload() {
+
+      const fileInput = document.getElementById('upload');
+      fileInput.addEventListener('change', function handleFileSelection() {
+        const selectedFile = fileInput.files[0];
+
+        if (selectedFile) {
+          const formData = new FormData();
+          formData.append('video', selectedFile);
+
+          fetch('http://localhost:3000/upload', {
+            method: 'POST',
+            body: formData
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.text();
+            })
+            .then(data => {
+              data = JSON.parse(data);
+              openPopup('Upload Successful', data.message); // Display the server response
+            })
+            .catch(error => {
+              openPopup('Error', 'Error uploading video.');
+            }).finally(() => {
+              // Clear the selected file to allow re-selection
+              fileInput.value = null;
+              fileInput.removeEventListener('change', handleFileSelection);
+            });
+        } else {
+          openPopup('Error', 'Please select a video file.');
+        }
+      });
+    }
+
+  </script>
+</body>
+
+</html>

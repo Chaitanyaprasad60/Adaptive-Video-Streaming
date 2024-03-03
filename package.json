@@ -1,0 +1,18 @@
+{
+  "name": "video-streaming-node",
+  "version": "1.0.0",
+  "description": "You want to embed a video in your portfolio!! Here's the solution. Upload the video to this server and embed the link given by this server to your HTML page using &lt;iframe> tag.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1"
+  }
+}
