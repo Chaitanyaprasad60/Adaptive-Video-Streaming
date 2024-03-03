@@ -13,28 +13,29 @@ app.use(cors())
 
 // API - To load HTML page (Frontend)
 app.get("/", function (req, res) {
-  
-    res.sendFile(__dirname + "/index.html");
-  
+
+  res.sendFile(__dirname + "/index.html");
+
 
 });
 
 app.get("/assets/:filename", function (req, res) {
   console.log(req.params.filename)
- 
+
   console.log(__dirname + `/assets/${req.params.filename}`)
   res.sendFile(__dirname + `/assets/${req.params.filename}`);
-  
-  
+
+
 
 });
 
 
 // API - For Stream the video
 app.get('/video/:filename', (req, res) => {
-  console.log( req.params.filename)
-  let fileName = "video.m3u8";
-  console.log("poipoi",{fileName})
+  console.log("Here",req.params.filename)
+  //let fileName = "video.m3u8";
+  let fileName = req.params.filename;
+  console.log("poipoi", { fileName })
   //let rand = Math.random();
   // console.log({rand})
   // if(rand >  0.5){   
@@ -42,15 +43,15 @@ app.get('/video/:filename', (req, res) => {
   //   fileName = "first2";
   // }
   const videoPath = `./videos/${fileName}`; // Replace with the actual path to your video file
-  console.log({fileName})
+  console.log({ fileName })
   const stat = fs.statSync(videoPath);
   const fileSize = stat.size;
   console.log(fileSize)
   const range = req.headers.range;
-    res.setHeader('Content-Type', 'application/x-mpegURL');
-    console.log({videoPath})
-    const file = fs.createReadStream(videoPath);    
-    file.pipe(res);
+  res.setHeader('Content-Type', 'application/x-mpegURL');
+  console.log({ videoPath })
+  const file = fs.createReadStream(videoPath);
+  file.pipe(res);
   //}
 });
 
