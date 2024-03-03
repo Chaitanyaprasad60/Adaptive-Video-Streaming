@@ -22,12 +22,12 @@ app.get('/video/:filename', (req, res) => {
   console.log({rand})
   if(rand >  0.5){   
     console.log("inside") 
-    fileName = "defaultVideo2";
+    fileName = "first2";
   }
   const videoPath = `./videos/${fileName}.mp4`; // Replace with the actual path to your video file
   console.log({fileName})
   const stat = fs.statSync(videoPath);
-  const fileSize = 56316008; //stat.size;
+  const fileSize = 1954955; //stat.size;
   console.log(fileSize)
   const range = req.headers.range;
 

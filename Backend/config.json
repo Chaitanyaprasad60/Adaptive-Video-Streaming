@@ -1,5 +1,6 @@
 {
     "encrptyKey":"ChaitanyaPrasad",
     "chunkSize":1000000,
-    "backendUrl":"http://localhost:3000"
+    "backendUrl":"http://localhost:3000",
+    "port":4000
 }
